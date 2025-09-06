@@ -10,7 +10,8 @@ COPY rrst-ros2-ws src
 # 依存関係をインストール
 RUN apt-get update && \
     rosdep update && \
-    rosdep install --from-paths src --ignore-src -y
+    rosdep install --from-paths src --ignore-src -y \
+    apt-get install figlet -y
 
 # ビルド（事前ビルド）
 RUN . /opt/ros/jazzy/setup.sh && \
