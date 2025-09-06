@@ -1,6 +1,6 @@
 FROM ros:jazzy-ros-core
 
-WORKDIR /ros2_ws
+WORKDIR /rrst-ros2-ws
 
 # パッケージソースをコピー
 COPY src src
