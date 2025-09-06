@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # rrst-ros2-ws も取得
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -21,7 +23,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and pushS
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
