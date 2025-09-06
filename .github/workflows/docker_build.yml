@@ -1,36 +1,35 @@
-name: Build & Push ROS2 Docker Image to GHCR
+name: Build ROS2 Workspace and Upload Artifact
 
 on:
   push:
     branches: [main]
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: my_ros2_jazzy
-      TAG: latest
-      GHCR_USERNAME: ${{ github.actor }}
-      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    - name: Install ROS2 dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-colcon-common-extensions python3-rosdep
+        sudo rosdep init || true
+        rosdep update
+        rosdep install --from-paths src --ignore-src -y
 
-    - name: Log in to GHCR
-      uses: docker/login-action@v2
-      with:
-        username: ${{ env.GHCR_USERNAME }}
-        password: ${{ env.GHCR_TOKEN }}
-        registry: ghcr.io
+    - name: Build ROS2 workspace
+      run: |
+        source /opt/ros/jazzy/setup.bash
+        colcon build --symlink-install
 
-    - name: Build & push Docker image
-      uses: docker/build-push-action@v5
+    - name: Package workspace
+      run: |
+        tar -czf ros2_ws.tar.gz install
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
       with:
-        context: .
-        push: true
-        tags: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
-        cache-to: type=inline
+        name: ros2_ws_build
+        path: ros2_ws.tar.gz
