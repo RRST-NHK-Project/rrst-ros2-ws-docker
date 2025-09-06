@@ -30,5 +30,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/<yourname>/<repo>:jazzy
-            ghcr.io/<yourname>/<repo>:latest
+            ghcr.io/rrst-nhk-project/rrst-ros2-ws-docker:jazzy
+            ghcr.io/rrst-nhk-project/rrst-ros2-ws-docker:latest
+
