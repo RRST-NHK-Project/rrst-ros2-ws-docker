@@ -1,24 +1,27 @@
-FROM ros:jazzy-ros-core
+# ROS 2 Jazzy のベースイメージ
+FROM osrf/ros:jazzy-desktop
 
+# 作業ディレクトリ
 WORKDIR /ros2_ws
 
-# ビルドに必要なツールを追加
-RUN apt-get update && apt-get install -y \
-    python3-rosdep \
-    python3-colcon-common-extensions \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# rosdep 初期化
-RUN rosdep init && rosdep update
-
-# rrst-ros2-ws 配下を src にコピー
+# ワークスペースコピー
 COPY rrst-ros2-ws src
 
-# 依存関係解決 & ビルド
-RUN rosdep install --from-paths src --ignore-src -r -y && \
+# 依存関係をインストール
+RUN apt-get update && \
+    rosdep update && \
+    rosdep install --from-paths src --ignore-src -y
+
+# ビルド（事前ビルド）
+RUN . /opt/ros/jazzy/setup.sh && \
     colcon build --symlink-install
 
-# 環境変数
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc && \
+    echo "source /ros2_ws/install/setup.bash" >> /root/.bashrc
+
+
+# 環境設定
 ENV ROS_WS=/ros2_ws
-RUN echo "source $ROS_WS/install/setup.bash" >> /root/.bashrc
+ENV ROS_PACKAGE_PATH=/ros2_ws/src
+
+
