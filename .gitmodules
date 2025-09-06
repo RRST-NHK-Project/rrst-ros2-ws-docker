@@ -1,0 +1,3 @@
+[submodule "rrst-ros2-ws"]
+	path = rrst-ros2-ws
+	url = https://github.com/RRST-NHK-Project/rrst-ros2-ws.git
